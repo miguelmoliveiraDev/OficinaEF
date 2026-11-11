@@ -1,0 +1,103 @@
+﻿@page
+@model RegisterModel
+
+@{
+    ViewData["Title"] = "Criar conta";
+    // Página independente (sem o _Layout padrão) para ocupar a tela toda
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"]</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+</head>
+<body class="auth-body">
+
+    <div class="auth-stars" aria-hidden="true"></div>
+    <div class="auth-moon" aria-hidden="true"></div>
+    <div class="auth-planet" aria-hidden="true"></div>
+
+    <main class="auth-wrap">
+        <section class="auth-card">
+            <h1 class="auth-title">@ViewData["Title"]</h1>
+            <p class="auth-subtitle">Preencha os dados para criar sua conta</p>
+
+            <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                <div asp-validation-summary="ModelOnly" class="auth-error" role="alert"></div>
+
+                <div class="auth-field">
+                    <label asp-for="Input.Email" class="visually-hidden">E-mail</label>
+                    <input asp-for="Input.Email" class="auth-input" autocomplete="username"
+                           aria-required="true" placeholder="E-mail" />
+                    <span asp-validation-for="Input.Email" class="auth-error"></span>
+                </div>
+
+                <div class="auth-field">
+                    <label asp-for="Input.Password" class="visually-hidden">Senha</label>
+                    <input asp-for="Input.Password" class="auth-input has-toggle" autocomplete="new-password"
+                           aria-required="true" placeholder="Senha" />
+                    <button type="button" class="auth-toggle" data-target="Input_Password"
+                            aria-label="Mostrar ou ocultar senha">Mostrar</button>
+                    <span asp-validation-for="Input.Password" class="auth-error"></span>
+                </div>
+
+                <div class="auth-field">
+                    <label asp-for="Input.ConfirmPassword" class="visually-hidden">Confirmar senha</label>
+                    <input asp-for="Input.ConfirmPassword" class="auth-input has-toggle" autocomplete="new-password"
+                           aria-required="true" placeholder="Confirmar senha" />
+                    <button type="button" class="auth-toggle" data-target="Input_ConfirmPassword"
+                            aria-label="Mostrar ou ocultar confirmação de senha">Mostrar</button>
+                    <span asp-validation-for="Input.ConfirmPassword" class="auth-error"></span>
+                </div>
+
+                <button id="registerSubmit" type="submit" class="auth-btn auth-btn-primary" style="margin-top: 20px;">Cadastrar</button>
+            </form>
+
+            @if ((Model.ExternalLogins?.Count ?? 0) > 0)
+            {
+                <div class="auth-divider">ou</div>
+
+                <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                    @foreach (var provider in Model.ExternalLogins!)
+                    {
+                        <button type="submit" class="auth-btn auth-btn-ghost" name="provider" value="@provider.Name"
+                                title="Cadastrar com a sua conta @provider.DisplayName">
+                            Cadastrar com @provider.DisplayName
+                        </button>
+                    }
+                </form>
+            }
+        </section>
+
+        <p class="auth-footer">
+            Já tem uma conta?
+            <a class="auth-link-accent" asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Entrar</a>
+        </p>
+    </main>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        (function () {
+            document.querySelectorAll('.auth-toggle[data-target]').forEach(function (btn) {
+                var input = document.getElementById(btn.getAttribute('data-target'));
+                if (!input) return;
+                btn.addEventListener('click', function () {
+                    var show = input.type === 'password';
+                    input.type = show ? 'text' : 'password';
+                    btn.textContent = show ? 'Ocultar' : 'Mostrar';
+                });
+            });
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Entrar";
+    // Página independente (sem o _Layout padrão) para ocupar a tela toda
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"]</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+</head>
+<body class="auth-body">
+
+    <div class="auth-stars" aria-hidden="true"></div>
+    <div class="auth-moon" aria-hidden="true"></div>
+    <div class="auth-planet" aria-hidden="true"></div>
+
+    <main class="auth-wrap">
+        <section class="auth-card">
+            <h1 class="auth-title">@ViewData["Title"]</h1>
+            <p class="auth-subtitle">Acesse sua conta para continuar</p>
+
+            <form id="account" method="post">
+                <div asp-validation-summary="ModelOnly" class="auth-error" role="alert"></div>
+
+                <div class="auth-field">
+                    <label asp-for="Input.Email" class="visually-hidden">E-mail</label>
+                    <input asp-for="Input.Email" class="auth-input" autocomplete="username"
+                           aria-required="true" placeholder="E-mail" />
+                    <span asp-validation-for="Input.Email" class="auth-error"></span>
+                </div>
+
+                <div class="auth-field">
+                    <label asp-for="Input.Password" class="visually-hidden">Senha</label>
+                    <input asp-for="Input.Password" class="auth-input has-toggle" autocomplete="current-password"
+                           aria-required="true" placeholder="Senha" />
+                    <button type="button" class="auth-toggle" id="toggle-password" aria-label="Mostrar ou ocultar senha">Mostrar</button>
+                    <span asp-validation-for="Input.Password" class="auth-error"></span>
+                </div>
+
+                <div class="auth-row">
+                    <label asp-for="Input.RememberMe" class="auth-check">
+                        <input asp-for="Input.RememberMe" />
+                        Lembrar de mim
+                    </label>
+                    <a id="forgot-password" class="auth-link" asp-page="./ForgotPassword">Esqueci a senha</a>
+                </div>
+
+                <button id="login-submit" type="submit" class="auth-btn auth-btn-primary">Entrar</button>
+            </form>
+
+            @if ((Model.ExternalLogins?.Count ?? 0) > 0)
+            {
+                <div class="auth-divider">ou</div>
+
+                <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                    @foreach (var provider in Model.ExternalLogins!)
+                    {
+                        <button type="submit" class="auth-btn auth-btn-ghost" name="provider" value="@provider.Name"
+                                title="Entrar com a sua conta @provider.DisplayName">
+                            Entrar com @provider.DisplayName
+                        </button>
+                    }
+                </form>
+            }
+        </section>
+
+        <p class="auth-footer">
+            Novo por aqui?
+            <a class="auth-link-accent" asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Cadastre-se</a>
+            <a id="resend-confirmation" class="auth-link auth-sub" asp-page="./ResendEmailConfirmation">Reenviar e-mail de confirmação</a>
+        </p>
+    </main>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        (function () {
+            var btn = document.getElementById('toggle-password');
+            var input = document.getElementById('Input_Password');
+            if (!btn || !input) return;
+            btn.addEventListener('click', function () {
+                var show = input.type === 'password';
+                input.type = show ? 'text' : 'password';
+                btn.textContent = show ? 'Ocultar' : 'Mostrar';
+            });
+        })();
+    </script>
+</body>
+</html>
